@@ -1,12 +1,21 @@
 body {
   background: #e8eaf6;
 }
-.contact-card .name {
-  color: none;
+.contact-card {
+  cursor: pointer;
 }
-.contact-card .responsive-img {
-  border-radius: 5px;
+.contact-card .name,
+.contact-card .surname {
+  font-weight: bold;
 }
 .contact-card .card-content {
   padding: 10px;
+}
+.contact-card .card-image img {
+  width: 70%;
+}
+.main .add-contact {
+  position: fixed;
+  right: 5px;
+  bottom: 5px;
 }
