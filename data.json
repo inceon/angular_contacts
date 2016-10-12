@@ -1,0 +1,8 @@
+[
+  {"id":"1", "surname":"Лобанов","name":"Германн","photo":"photo_1.jpg","number":"+380661111111", "email":"test1@gmail.com"},
+  {"id":"2", "surname":"Горбунова","name":"Галина","photo":"photo_2.jpg","number":"+380662222222", "email":"test2@gmail.com"},
+  {"id":"3", "surname":"Макарова","name":"Наталья","photo":"photo_3.jpg","number":"+380663333333", "email":"test3@gmail.com"},
+  {"id":"4", "surname":"Поляков","name":"Семён","photo":"photo_4.jpg","number":"+380664444444", "email":"test4@gmail.com"},
+  {"id":"5", "surname":"Носков","name":"Лаврентий","photo":"photo_5.jpg","number":"+380665555555", "email":"test5@gmail.com"},
+  {"id":"6", "surname":"Волков","name":"Матвей","photo":"photo_6.jpg","number":"+3806666666", "email":"test6@gmail.com"}
+]
