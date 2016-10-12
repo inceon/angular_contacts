@@ -1,45 +1,26 @@
-let contactsApp = angular.module('contactsApp', ['ngRoute']);
-contactsApp.config($routeProvide => {
-    $routeProvide
-        .when('/',{
-            templateUrl: './template/contacts.html',
-            controller: 'ContactsCtrl'
-        })
-        .otherwise({
-            redirectTo: '/'
-        })
-});
-contactsApp.controller('ContactsCtrl', function($scope, $http, $location) {
-    var contactsList = $scope;
+'use strict';
+angular.module('contactsApp', ['ngRoute'])
+    .config($routeProvider => {
+        $routeProvider
+            .when('/', {
+                templateUrl: '../template/contacts.html',
+                controller: 'ContactsCtrl'
+            })
+            .when('/', {
+                templateUrl: '../template/add_contact.html',
+                controller: 'AddContactCtrl'
+            })
+            .otherwise({
+                redirectTo: '/'
+            });
+    })
+    .controller('ContactsCtrl', function($scope, $http) {
+        $http.get("data.json").success((data, status) => {
+            if(status == "200")
+                $scope.contacts = data;
+            console.log(data);
+        });
+    })
+    .controller('AddContactCtrl', function($scope, $http) {
 
-    $http.get("data.json").success((data, status) => {
-        if(status == "200")
-            contactsList.contacts = data;
-        console.log(data);
     });
-
-    contactsList.alert = () => {
-        alert();
-    };
-
-    contactsList.addTodo = () => {
-        contactsList.contacts.push({text:contactsList.todoText, done:false});
-        contactsList.todoText = '';
-    };
-
-    contactsList.remaining = () => {
-        var count = 0;
-        angular.forEach(contactsList.contacts, function(todo) {
-            count += todo.done ? 0 : 1;
-        });
-        return count;
-    };
-
-    contactsList.archive = () => {
-        var oldTodos = contactsList.contacts;
-        contactsList.contacts= [];
-        angular.forEach(oldTodos, function(todo) {
-            if (!todo.done) contactsList.contacts.push(todo);
-        });
-    };
-});
