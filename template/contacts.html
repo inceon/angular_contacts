@@ -1,0 +1,26 @@
+<div class="main col s12 m8 offset-m2 l6 offset-l3">
+    <form>
+        <input type="text" ng-model="search" placeholder="Поиск...">
+    </form>
+    <div ng-repeat="contact in contacts | orderBy:'name' | filter:search">
+        <div class="contact-card card horizontal indigo lighten-3" ng-click="alert()">
+            <div class="card-image">
+                <img ng-src="./img/{{contact.photo}}">
+            </div>
+            <div class="card-content">
+                    <span class="name flow-text">
+                        {{contact.name}}
+                    </span>
+                <span class="surname flow-text">
+                        {{contact.surname}}
+                    </span>
+                <div class="phone flow-text">
+                    {{contact.number}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="add-contact">
+        <a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a>
+    </div>
+</div>
