@@ -9,6 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "angular": "^1.2.31",
+    "materialize": "^1.0.0",
+    "materialize-css": "^0.97.7"
+  },
+  "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-connect": "^5.0.0",
     "gulp-watch": "^4.3.10"
