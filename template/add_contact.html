@@ -1,0 +1,38 @@
+<div class="add-page col s12 m8 offset-m2 l6 offset-l3">
+    <h4 class="center">Добавить контакт</h4>
+    <form ng-submit="submit()">
+        <div class="file-field input-field">
+            <div class="btn">
+                File
+                <input type="file" name="photo" ng-model="photo">
+            </div>
+            <div class="file-path-wrapper">
+                <input class="file-path validate" type="text" placeholder="Фотография пользователя">
+            </div>
+        </div>
+        <div class="input-field">
+            <input class="validate" id="name" type="text" name="name" ng-model="name">
+            <label for="name">Имя</label>
+        </div>
+        <div class="input-field">
+            <input class="validate" id="surname" type="text" name="surname" ng-model="surname">
+            <label for="surname">Фамилия</label>
+        </div>
+        <div class="input-field">
+            <input class="validate" id="phone" type="number" name="phone" ng-model="phone">
+            <label for="phone">Номер телефона</label>
+        </div>
+        <div class="input-field">
+            <input class="validate" id="email" type="email" name="email" ng-model="email">
+            <label for="email">Електронная почта</label>
+        </div>
+        <div class="button center">
+            <a class="back btn waves-effect waves-light red lighten-2" href="#/">
+                Назад<i class="material-icons left">list</i>
+            </a>
+            <button class="send btn waves-effect waves-light" ng-class="{disabled: (!name && !name.$valid) || (!surname && !surname.$valid) || (!phone && !phone.$valid) || (email && !email.$valid)}" type="submit" name="action">
+                Добавить<i class="material-icons right">send</i>
+            </button>
+        </div>
+    </form>
+</div>
