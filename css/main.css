@@ -7,7 +7,7 @@ body {
 }
 .action .edit,
 .action .back {
-  margin: 2px 4%;
+  margin-bottom: 5px;
   width: 90%;
 }
 .contact-card {
@@ -24,7 +24,7 @@ body {
   width: 70%;
 }
 .contact-page {
-  font-size: 1.1em;
+  font-size: 1.3em;
 }
 .contact-page .contact-img {
   padding: 5px 0 15px;
