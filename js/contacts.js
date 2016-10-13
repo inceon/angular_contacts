@@ -1,7 +1,7 @@
 'use strict';
 var contacts = [];
 angular.module('contactsApp', ['ngRoute'])
-    .config($routeProvider => {
+    .config(['$routeProvider', function($routeProvider) {
         $routeProvider
             .when('/', {
                 templateUrl: '../template/contacts.html',
@@ -22,23 +22,23 @@ angular.module('contactsApp', ['ngRoute'])
             .otherwise({
                 redirectTo: '/'
             });
-    })
-    .run(($http) => {
-        $http.get("data.json").success((data, status) => {
+    }])
+    .run(['$http', function($http) {
+        $http.get("data.json").success(function(data, status) {
             if(status == "200") {
                 contacts = data;
             }
         });
-    })
-    .controller('ContactsCtrl', function($scope, $location) {
+    }])
+    .controller('ContactsCtrl', ['$scope', '$location', function($scope, $location) {
         $scope.contacts = contacts;
 
-        $scope.alert = id => {
+        $scope.alert = function(id) {
             $location.path("/contact/" + id);
         }
-    })
-    .controller('AddContactCtrl', function($scope, $http, $window) {
-        $scope.submit = () => {
+    }])
+    .controller('AddContactCtrl', ['$scope', function($scope) {
+        $scope.submit = function() {
             let user = {
                 name: $scope.name,
                 surname: $scope.surname,
@@ -50,10 +50,10 @@ angular.module('contactsApp', ['ngRoute'])
             console.log(contacts);
             // $window.location.href = "/";
         }
-    })
-    .controller('PageContactCtrl', function($scope, $http, $location, $routeParams) {
+    }])
+    .controller('PageContactCtrl', ['$scope', '$http', '$location', '$routeParams', function($scope, $http, $location, $routeParams) {
         $scope.contact = contacts[$routeParams.id - 1];
-    })
-    .controller('EditContactCtrl', function($scope, $routeParams) {
+    }])
+    .controller('EditContactCtrl', ['$scope', '$routeParams', function($scope, $routeParams) {
         $scope.contact = contacts[$routeParams.id - 1];
-    });
+    }]);
