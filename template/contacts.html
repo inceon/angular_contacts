@@ -2,10 +2,10 @@
     <form>
         <input type="text" ng-model="search" placeholder="Поиск...">
     </form>
-    <div ng-repeat="contact in contacts | orderBy:'name' | filter:search" ng-click="alert(contact.id)">
+    <div ng-repeat="contact in contacts | orderBy:'name' | filter:search" ng-click="show(contact.id)">
         <div class="contact-card card horizontal teal lighten-3 waves-effect waves-light">
             <div class="card-image">
-                <img ng-src="./img/{{contact.photo}}" alt="{{contact.name + ' ' + contacts.surname}}">
+                <img ng-src="http://contacts.server/img/{{contact.photo}}" alt="{{contact.name + ' ' + contacts.surname}}">
             </div>
             <div class="card-content">
                     <span class="name flow-text">
