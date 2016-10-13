@@ -4,9 +4,11 @@ body {
 .action {
   position: absolute;
   bottom: 5px;
+  width: 100%;
 }
 .action .edit,
-.action .back {
+.action .back,
+.action .auth {
   margin-bottom: 5px;
   width: 90%;
 }
@@ -22,6 +24,7 @@ body {
 }
 .contact-card .card-image img {
   width: 70%;
+  max-width: 120px !important;
 }
 .contact-page {
   font-size: 1.3em;
