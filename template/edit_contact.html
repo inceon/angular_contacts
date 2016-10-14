@@ -1,3 +1,43 @@
 <div class="edit-page col s12 m8 offset-m2 l6 offset-l3">
-    {{contact.id}}
+    <h4 class="center">Изменить контакт</h4>
+    <div id="card-alert" class="card red lighten-2" ng-show="err.status" ng-click="err.status = false">
+        <div class="card-content white-text">
+            <p class="center">{{err.message}}</p>
+        </div>
+    </div>
+    <form ng-submit="submit(photo)" name="addContactForm">
+        <div class="file-field input-field">
+            <div class="btn">
+                File
+                <input name="photo" type="file" ng-model="photo" ngf-select accept="image/*" ngf-max-height="1000" ngf-max-size="1MB">
+            </div>
+            <div class="file-path-wrapper">
+                <input class="file-path validate" type="text" placeholder="Фотография пользователя">
+            </div>
+        </div>
+        <div class="input-field">
+            <input class="validate" id="name" type="text" name="name" ng-model="contact.name" size="30" required>
+            <label ng-class="{active : contact.name}" for="name">Имя *</label>
+        </div>
+        <div class="input-field">
+            <input class="validate" id="surname" type="text" name="surname" ng-model="contact.surname" size="30" required>
+            <label ng-class="{active : contact.surname}" for="surname">Фамилия *</label>
+        </div>
+        <div class="input-field">
+            <input class="validate" id="phone" type="tel" pattern="(\+?\d[- .]*){7,13}" name="phone" ng-model="contact.number" required>
+            <label ng-class="{active : contact.number}" for="phone">Номер телефона *</label>
+        </div>
+        <div class="input-field">
+            <input class="validate" id="email" type="email" name="email" ng-model="contact.email">
+            <label ng-class="{active : contact.email}" for="email">Електронная почта</label>
+        </div>
+        <div class="button center row">
+            <a class="back btn waves-effect waves-light red lighten-2 col s6" href="#/contact/{{contact.id}}">
+                Назад<i class="material-icons left">list</i>
+            </a>
+            <button class="send btn waves-effect waves-light col s6" ng-disabled="!addContactForm.$valid" type="submit" name="action">
+                Изменить<i class="material-icons right">send</i>
+            </button>
+        </div>
+    </form>
 </div>
