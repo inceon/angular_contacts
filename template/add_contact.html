@@ -5,7 +5,7 @@
             <p class="center">{{err.message}}</p>
         </div>
     </div>
-    <form name="addContactForm">
+    <form ng-submit="submit(photo)" name="addContactForm">
         <div class="file-field input-field">
             <div class="btn">
                 File
@@ -24,7 +24,7 @@
             <label for="surname">Фамилия *</label>
         </div>
         <div class="input-field">
-            <input class="validate" id="phone" type="number" name="phone" ng-model="phone" required>
+            <input class="validate" id="phone" type="tel" pattern="(\+?\d[- .]*){7,13}" name="phone" ng-model="phone" required>
             <label for="phone">Номер телефона *</label>
         </div>
         <div class="input-field">
@@ -35,7 +35,7 @@
             <a class="back btn waves-effect waves-light red lighten-2" href="#/list">
                 Назад<i class="material-icons left">list</i>
             </a>
-            <button class="send btn waves-effect waves-light" ng-disabled="!addContactForm.$valid" ng-click="submit(photo)" name="action">
+            <button class="send btn waves-effect waves-light" ng-disabled="!addContactForm.$valid" type="submit" name="action">
                 Добавить<i class="material-icons right">send</i>
             </button>
         </div>
