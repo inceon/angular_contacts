@@ -43,6 +43,7 @@ angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpl
         if ($localStorage.key && $localStorage.key.length != 0) {
             $location.path("/list");
         }
+        $scope.result = true;
         $scope.auth = function () {
             if($scope.login && $scope.password) {
                 let user = {
@@ -57,6 +58,8 @@ angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpl
                                 $localStorage.key = data['key'];
                                 $localStorage.id = data['id'];
                                 $location.path("/list");
+                            } else {
+                                $scope.result = false;
                             }
                          }
                      });
@@ -101,9 +104,6 @@ angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpl
                         data.forEach(item => {
                             contacts.push(item);
                         });
-                        if (data.length == 0) {
-                            $location.path("/");
-                        }
                     }
                 });
         }
@@ -122,47 +122,124 @@ angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpl
             return node.id == $routeParams.id;
         });
         $scope.contact = found[0];
-    }])
-    .controller('AddContactCtrl', ['$scope', 'Upload', '$localStorage', '$location', '$timeout', function($scope, Upload, $localStorage, $location, $timeout) {
-        if (!$localStorage.key || $localStorage.key.length == 0) {
-            $location.path("/");
-        }
-        // TODO
-        // Пофиксить добавление без картинки
-        $scope.submit = function(file) {
-            if (!file) return;
-            file.upload = Upload.upload({
-                url: 'http://contacts.server/add_contact.php?key=' + $localStorage.key,
-                data: {
-                    name: $scope.name,
-                    surname: $scope.surname,
-                    number: $scope.phone,
-                    email: $scope.email,
-                    photo: file
-                }
-            });
-            file.upload.then(function(resp) {
-                $timeout(function () {
-                    console.log(resp.data);
-                    if(resp.data['status'] == 'OK'){
-                        console.log(resp.data);
-                        $location.path("/list");
-                    }else{
-                        $scope.err = {};
-                        $scope.err.status = true;
-                        $scope.err.message = "Запись не удалось добавить";
+
+        $scope.delete = function(id){
+            $http.get("http://contacts.server/delete_contact.php?key=" + $localStorage.key + '&id=' + id)
+                .success(function (data, status) {
+                    if (status == 200) {
+                        if (data['status'] == 'OK'){
+                            $location.path("/list");
+                        } else {
+                            $scope.err = {};
+                            $scope.err.status = true;
+                            $scope.err.message = "Удалить не удалось";
+                        }
                     }
                 });
-            }, function(){
-                $scope.err = {};
-                $scope.err.status = true;
-                $scope.err.message = "Не удалось загрузить файл";
-            });
-        };
+        }
     }])
-    .controller('EditContactCtrl', ['$scope', '$routeParams', '$localStorage', '$location', function($scope, $routeParams, $localStorage, $location) {
+    .controller('AddContactCtrl', ['$scope', 'Upload', '$localStorage', '$location', '$timeout', '$http', function($scope, Upload, $localStorage, $location, $timeout, $http) {
         if (!$localStorage.key || $localStorage.key.length == 0) {
             $location.path("/");
         }
-        $scope.contact = contacts[$routeParams.id - 1];
+        $scope.submit = function(file) {
+            let url = 'http://contacts.server/add_contact.php?key=' + $localStorage.key;
+            if (file) {
+                Upload.upload({
+                    url: url,
+                    data: {
+                        name: $scope.name,
+                        surname: $scope.surname,
+                        number: $scope.phone,
+                        email: $scope.email,
+                        photo: file
+                    }
+                }).success(function (data) {
+                    if (data['status'] == 'OK') {
+                        $location.path("/list");
+                    } else {
+                        $scope.err = {};
+                        $scope.err.status = true;
+                        $scope.err.message = data['message'];
+                    }
+                }).error(function () {
+                    $scope.err = {};
+                    $scope.err.status = true;
+                    $scope.err.message = "Произошла ошибка сервера";
+                });
+            } else {
+                $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+                $http.post(url, {
+                        name: $scope.name,
+                        surname: $scope.surname,
+                        number: $scope.phone,
+                        email: $scope.email
+                    })
+                    .success(function(data, status) {
+                        if(status == 200) {
+                            if(data['status'] == 'OK') {
+                                $location.path("/list");
+                            }else{
+                                $scope.err = {};
+                                $scope.err.status = true;
+                                $scope.err.message = data['message'];
+                            }
+                        }
+                    });
+            }
+        };
+    }])
+    .controller('EditContactCtrl', ['$scope', '$routeParams', '$localStorage', '$location', '$http', 'Upload', function($scope, $routeParams, $localStorage, $location, $http, Upload) {
+        if (!$localStorage.key || $localStorage.key.length == 0) {
+            $location.path("/");
+        }
+        let found = contacts.filter(function (node) {
+            return node.id == $routeParams.id;
+        });
+        $scope.contact = found[0];
+
+        $scope.submit = function(file) {
+            let url = 'http://contacts.server/edit_contact.php?key=' + $localStorage.key;
+            let data = {
+                id: $scope.contact.id,
+                name: $scope.contact.name,
+                surname: $scope.contact.surname,
+                number: $scope.contact.number,
+                email: $scope.contact.email
+            };
+            if (file) {
+                data['photo'] = file;
+                Upload.upload({
+                    url: url,
+                    data: data
+                }).success(function (data) {
+                    if (data['status'] == 'OK') {
+                        $scope.contact.photo = data['photo'];
+                        $location.path("/contact/" + $scope.contact.id);
+                    } else {
+                        $scope.err = {};
+                        $scope.err.status = true;
+                        $scope.err.message = data['message'];
+                    }
+                }).error(function () {
+                    $scope.err = {};
+                    $scope.err.status = true;
+                    $scope.err.message = "Произошла ошибка сервера";
+                });
+            } else {
+                $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+                $http.post(url, data)
+                     .success(function(data, status) {
+                        if(status == 200) {
+                            if(data['status'] == 'OK') {
+                                $location.path("/contact/" + $scope.contact.id);
+                            }else{
+                                $scope.err = {};
+                                $scope.err.status = true;
+                                $scope.err.message = data['message'];
+                            }
+                        }
+                     });
+            }
+        };
     }]);
