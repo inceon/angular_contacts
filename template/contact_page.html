@@ -1,4 +1,9 @@
 <div class="contact-page col s12 m8 offset-m2 l6 offset-l3">
+    <div id="card-alert" class="card red lighten-2" ng-show="err.status" ng-click="err.status = false">
+        <div class="card-content white-text">
+            <p class="center">{{err.message}}</p>
+        </div>
+    </div>
     <div class="contact-img center ">
         <img class="z-depth-2" ng-src="http://contacts.server/img/{{contact.photo}}" alt="{{contact.name + ' ' + contacts.surname}}">
     </div>
@@ -14,11 +19,25 @@
     <div class="row">
         <div class="col s6 right-align"><b>Email</b></div><div class="col s6">{{contact.email}}</div>
     </div>
-    <div class="action center">
-        <a class="edit btn waves-effect waves-light green lighten-2" href="#/edit/{{contact.id}}">
+
+    <div class="modal" ng-class="{'show-modal' : delete_modal}">
+        <div class="modal-content">
+            <p>Удалить контакт {{contact.name}} {{contact.surname}}?</p>
+        </div>
+        <div class="modal-footer">
+            <a ng-click="delete(contact.id)" class=" modal-action modal-close waves-effect waves-green btn-flat">Да</a>
+            <a ng-click="delete_modal = false" class=" modal-action modal-close waves-effect waves-red btn-flat">Нет</a>
+        </div>
+    </div>
+
+    <div class="action center row">
+        <a class="edit btn waves-effect waves-light green lighten-2 col s10" href="#/edit/{{contact.id}}">
             Редактировать<i class="material-icons left">edit</i>
         </a>
-        <a class="back btn waves-effect waves-light red lighten-2" href="#/list">
+        <button class="delete btn waves-effect waves-light red modal-trigger col s2" ng-click="delete_modal = true">
+            <i class="material-icons center">delete</i>
+        </button>
+        <a class="back btn waves-effect waves-light red lighten-2 col s12" href="#/list">
             Назад<i class="material-icons left">list</i>
         </a>
     </div>
