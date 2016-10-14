@@ -1,6 +1,11 @@
 <div class="login-page col s12 m8 offset-m2 l6 offset-l3">
     <form ng-submit="auth()" name="authForm">
         <h3 class="center">Вход</h3>
+        <div id="card-alert" class="card red lighten-2" ng-hide="result" ng-click="result = true">
+            <div class="card-content white-text">
+                <p class="center">Неправильное сочетание логин/пароль</p>
+            </div>
+        </div>
         <div class="input-field">
             <input id="login" type="text" class="validate" ng-model="login" size="30" required>
             <label for="login">Логин</label>
@@ -9,11 +14,11 @@
             <input id="password" type="password" class="validate" ng-model="password" required>
             <label for="password">Пароль</label>
         </div>
-        <div class="action center">
-            <button class="auth btn waves-effect waves-light" ng-disabled="!authForm.$valid" type="submit" name="action">Войти
+        <div class="action center row">
+            <button class="auth btn waves-effect waves-light col s12" ng-disabled="!authForm.$valid" type="submit" name="action">Войти
                 <i class="material-icons right">send</i>
             </button>
-            <a class="auth btn red lighten-2 waves-effect waves-light " href="#/register">Зарегистрироваться
+            <a class="auth btn red lighten-2 waves-effect waves-light col s12" href="#/register">Зарегистрироваться
                 <i class="material-icons right">send</i>
             </a>
         </div>
