@@ -7,18 +7,18 @@
             </div>
         </div>
         <div class="input-field">
-            <input id="login" type="text" class="validate" ng-model="login" size="30" required>
+            <input id="login" type="text" class="validate" ng-model="login" size="30" pattern="^[a-z][a-z0-9]*?([-_][a-z0-9]+){0,2}$" required>
             <label for="login">Логин</label>
         </div>
         <div class="input-field">
             <input id="password" type="password" class="validate" ng-model="password" required>
             <label for="password">Пароль</label>
         </div>
-        <div class="action center">
-            <button class="auth btn waves-effect waves-light" ng-disabled="!registerForm.$valid"  type="submit" name="action">
+        <div class="action center row">
+            <button class="auth btn waves-effect waves-light col s12" ng-disabled="!registerForm.$valid"  type="submit" name="action">
                 Зарегистрироваться<i class="material-icons right">send</i>
             </button>
-            <a class="auth btn red lighten-2 waves-effect waves-light " href="#/">
+            <a class="auth btn red lighten-2 waves-effect waves-light col s12" href="#/">
                 Войти<i class="material-icons right">send</i>
             </a>
         </div>
