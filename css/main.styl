@@ -1,17 +1,15 @@
 @import 'nib';
+html
+    width 100%
 body
     background #e8eaf6
-
-.action
-    position absolute
-    bottom 5px
     width 100%
 
+.action
     .edit,
     .back,
     .auth
-        margin-bottom  5px
-        width 90%
+        margin-bottom 5px
 
 .contact-card
     cursor pointer
@@ -24,8 +22,8 @@ body
 
     .card-image
         img
-            width 70%
-            max-width 120px !important
+            max-height 120px
+            max-width 120px
 
 .contact-page
     font-size 1.3em
@@ -34,6 +32,12 @@ body
         img
             width 50%
             border-radius 5px
+    .show-modal
+        z-index 1003
+        display block
+        opacity 1
+        transform scaleX(1)
+        top 10%
 
 
 .main

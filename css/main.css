@@ -1,16 +1,14 @@
+html {
+  width: 100%;
+}
 body {
   background: #e8eaf6;
-}
-.action {
-  position: absolute;
-  bottom: 5px;
   width: 100%;
 }
 .action .edit,
 .action .back,
 .action .auth {
   margin-bottom: 5px;
-  width: 90%;
 }
 .contact-card {
   cursor: pointer;
@@ -23,8 +21,8 @@ body {
   padding: 10px;
 }
 .contact-card .card-image img {
-  width: 70%;
-  max-width: 120px !important;
+  max-height: 120px;
+  max-width: 120px;
 }
 .contact-page {
   font-size: 1.3em;
@@ -35,6 +33,19 @@ body {
 .contact-page .contact-img img {
   width: 50%;
   border-radius: 5px;
+}
+.contact-page .show-modal {
+  z-index: 1003;
+  display: block;
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+  -webkit-transform: scaleX(1);
+  -moz-transform: scaleX(1);
+  -o-transform: scaleX(1);
+  -ms-transform: scaleX(1);
+  transform: scaleX(1);
+  top: 10%;
 }
 .main .add-contact {
   position: fixed;
