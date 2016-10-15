@@ -6,6 +6,10 @@
         </div>
     </div>
     <form ng-submit="submit(photo)" name="addContactForm">
+        <div class="contact-img center ">
+            <img class="z-depth-2" ng-if="!photo" ng-src="http://contacts.server/img/{{contact.photo}}" alt="{{contact.name + ' ' + contacts.surname}}">
+            <img class="z-depth-2" ng-if="photo" ngf-thumbnail="photo" alt="{{contact.name + ' ' + contacts.surname}}">
+        </div>
         <div class="file-field input-field">
             <div class="btn">
                 File
