@@ -43,7 +43,6 @@ angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpl
         if ($localStorage.key && $localStorage.key.length != 0) {
             $location.path("/list");
         }
-        $scope.result = true;
         $scope.auth = function () {
             if($scope.login && $scope.password) {
                 let user = {
@@ -59,17 +58,21 @@ angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpl
                                 $localStorage.id = data['id'];
                                 $location.path("/list");
                             } else {
-                                $scope.result = false;
+                                $scope.err = {};
+                                $scope.err.status = true;
+                                $scope.err.message = "Неправильное сочетание логин/пароль";
                             }
                          }
+                     })
+                     .error(function(err){
+                         $scope.err = {};
+                         $scope.err.status = true;
+                         $scope.err.message = "Ошибка сервера";
                      });
-            } else {
-                return false;
             }
         }
     }])
     .controller('RegisterCtrl', ['$scope', '$localStorage', '$http', 'md5', '$location', function($scope, $localStorage, $http, md5, $location) {
-        $scope.result = true;
         $scope.register = function () {
             if($scope.login && $scope.password) {
                 let user = {
@@ -85,9 +88,16 @@ angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpl
                                 $localStorage.id = data['id'];
                                 $location.path("/list");
                             }else{
-                                $scope.result = false;
+                                $scope.err = {};
+                                $scope.err.status = true;
+                                $scope.err.message = "Такой логин уже зарегистрирован";
                             }
                         }
+                    })
+                    .error(function(err){
+                        $scope.err = {};
+                        $scope.err.status = true;
+                        $scope.err.message = "Ошибка сервера";
                     });
             }
         }
@@ -105,6 +115,11 @@ angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpl
                             contacts.push(item);
                         });
                     }
+                })
+                .error(function(err){
+                    $scope.err = {};
+                    $scope.err.status = true;
+                    $scope.err.message = "Произошла ошибка сервера";
                 });
         }
         $scope.contacts = contacts;
