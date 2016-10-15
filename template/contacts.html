@@ -1,4 +1,9 @@
 <div class="main col s12 m8 offset-m2 l6 offset-l3">
+    <div id="card-alert" class="card red lighten-2" ng-if="err.status" ng-click="err.status = false">
+        <div class="card-content white-text">
+            <p class="center">{{err.message}}</p>
+        </div>
+    </div>
     <form>
         <input type="text" ng-model="search" placeholder="Поиск...">
     </form>
