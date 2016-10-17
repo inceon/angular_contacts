@@ -38,7 +38,7 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
                 controller: 'EditContactCtrl'
             });
     }])
-    .factory('userUrl', function () {
+    .factory('apiUrl', function () {
         var url = {};
         url.mainModule = {
             api: 'http://contacts.server/',
@@ -64,17 +64,19 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
         };
         return url;
     })
-    .service('requestService', ['$http', 'userUrl', '$localStorage', function ($http, userUrl, $localStorage) {
+    .service('requestService', ['$http', 'apiUrl', '$localStorage', function ($http, apiUrl, $localStorage) {
         var action = {
             request : function (method, action, data, handleSuccess, handleError) {
+                let auth_key = '';
                 if($localStorage.key){
-                    var auth_key = '&key='+$localStorage.key;
+                    auth_key = '&key='+$localStorage.key;
                 }
+                $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
                 var getConfig, postConfig;
                 (method === "GET") ? getConfig = data : postConfig = data;
                 var req = $http({
                     method: method,
-                    url: userUrl.mainModule.api + action + auth_key,
+                    url: apiUrl.mainModule.api + action + auth_key,
                     params: getConfig,
                     data: postConfig
                 });
@@ -84,7 +86,7 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
         };
         return action;
     }])
-    .controller('LoginCtrl', ['$scope', '$http', '$location', '$localStorage', 'md5', function($scope, $http, $location, $localStorage, md5) {
+    .controller('LoginCtrl', ['$scope', '$location', '$localStorage', 'md5', 'requestService', 'apiUrl', function($scope, $location, $localStorage, md5, requestService, apiUrl) {
         if ($localStorage.key && $localStorage.key.length != 0) {
             $location.path("/list");
         }
@@ -94,26 +96,27 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
                     login: $scope.login,
                     password: md5.createHash($scope.password)
                 };
-                $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
-                $http.post('http://contacts.server/auth.php', user)
-                     .success(function(data, status) {
-                         if(status == 200) {
-                            if(data['status'] == 'OK') {
-                                $localStorage.key = data['key'];
-                                $localStorage.id = data['id'];
-                                $location.path("/list");
-                            } else {
-                                $scope.err = {};
-                                $scope.err.status = true;
-                                $scope.err.message = "Неправильное сочетание логин/пароль";
-                            }
-                         }
-                     })
-                     .error(function(err){
-                         $scope.err = {};
-                         $scope.err.status = true;
-                         $scope.err.message = "Ошибка сервера";
-                     });
+
+                let handleSuccess = function (res) {
+                    if (res.data['status'] == 'OK') {
+                        $localStorage.key = res.data['key'];
+                        $localStorage.id = res.data['id'];
+                        $location.path("/list");
+                    } else {
+                        $scope.err = {
+                            status: true,
+                            message: "Неправильное сочетание логин/пароль"
+                        };
+                    }
+                };
+                let handleError = function () {
+                    $scope.err = {
+                        status: true,
+                        message: "Произошла ошибка сервера"
+                    };
+                };
+
+                requestService.request('POST', apiUrl.mainModule.LoginCtrl.login, user, handleSuccess, handleError);
             }
         }
     }])
@@ -147,7 +150,7 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
             }
         }
     }])
-    .controller('ContactsCtrl', ['$scope', '$location', '$localStorage', 'requestService', 'userUrl', function($scope, $location, $localStorage, requestService, userUrl) {
+    .controller('ContactsCtrl', ['$scope', '$location', '$localStorage', 'requestService', 'apiUrl', function($scope, $location, $localStorage, requestService, apiUrl) {
         if (!$localStorage.key || $localStorage.key.length == 0) {
             $location.path("/");
         }
@@ -158,7 +161,6 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
                 res.data.forEach(item => {
                     $scope.contacts.push(item);
                 });
-                console.log(data);
             };
             let handleError = function(){
                 $scope.err = {
@@ -167,7 +169,7 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
                 };
             };
 
-            requestService.request('GET', userUrl.mainModule.ContactsCtrl.get, {}, handleSuccess, handleError);
+            requestService.request('GET', apiUrl.mainModule.ContactsCtrl.get, {}, handleSuccess, handleError);
         }
 
         $scope.show = function(id) {
