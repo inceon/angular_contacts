@@ -120,33 +120,34 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
             }
         }
     }])
-    .controller('RegisterCtrl', ['$scope', '$localStorage', '$http', 'md5', '$location', function($scope, $localStorage, $http, md5, $location) {
+    .controller('RegisterCtrl', ['$scope', '$localStorage', 'md5', '$location', 'requestService', 'apiUrl', function($scope, $localStorage, md5, $location, requestService, apiUrl) {
         $scope.register = function () {
             if($scope.login && $scope.password) {
                 let user = {
                     login: $scope.login,
                     password: md5.createHash($scope.password)
                 };
-                $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
-                $http.post('http://contacts.server/register.php', user)
-                    .success(function(data, status) {
-                        if(status == 200) {
-                            if(data['status'] == 'OK') {
-                                $localStorage.key = data['key'];
-                                $localStorage.id = data['id'];
-                                $location.path("/list");
-                            }else{
-                                $scope.err = {};
-                                $scope.err.status = true;
-                                $scope.err.message = "Такой логин уже зарегистрирован";
-                            }
-                        }
-                    })
-                    .error(function(err){
-                        $scope.err = {};
-                        $scope.err.status = true;
-                        $scope.err.message = "Ошибка сервера";
-                    });
+
+                let handleSuccess = function (res) {
+                    if(res.data['status'] == 'OK') {
+                        $localStorage.key = res.data['key'];
+                        $localStorage.id = res.data['id'];
+                        $location.path("/list");
+                    }else{
+                        $scope.err = {
+                            status: true,
+                            message: "Такой логин уже зарегистрирован"
+                        };
+                    }
+                };
+                let handleError = function () {
+                    $scope.err = {
+                        status: true,
+                        message: "Произошла ошибка сервера"
+                    };
+                };
+
+                requestService.request('POST', apiUrl.mainModule.RegisterCtrl.register, user, handleSuccess, handleError);
             }
         }
     }])
