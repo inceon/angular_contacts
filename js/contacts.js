@@ -38,6 +38,52 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
                 controller: 'EditContactCtrl'
             });
     }])
+    .factory('userUrl', function () {
+        var url = {};
+        url.mainModule = {
+            api: 'http://contacts.server/',
+            LoginCtrl: {
+                login: 'auth.php'
+            },
+            RegisterCtrl: {
+                register: 'register.php'
+            },
+            ContactsCtrl: {
+                get: 'get_data.php?'
+            },
+            PageContactCtrl: {
+                get: 'get_data.php?'
+            },
+            AddContactCtrl: {
+                add: 'add_contact.php?'
+            },
+            EditContactCtrl: {
+                set: 'edit_contact.php?'
+            }
+        };
+        return url;
+    })
+    .service('requestService', ['$http', 'userUrl', '$localStorage', function ($http, userUrl, $localStorage) {
+        var action = {
+            request : function (method, action, data, config, handleSuccess, handleError) {
+                $rootScope.globalLoader={'opacity':1};
+                if($localStorage.key){
+                    var auth_key = '&key='+$localStorage.key;
+                }
+                var getConfig, postConfig;
+                (method === "GET") ? getConfig = data : postConfig = data;
+                var req = $http({
+                    method: method,
+                    url: userUrl.mainModule.api + action + auth_key,
+                    params: getConfig,
+                    data: postConfig
+                });
+
+                return (req.then(handleSuccess, handleError))
+            }
+        };
+        return action;
+    }])
     .controller('LoginCtrl', ['$scope', '$http', '$location', '$localStorage', 'md5', function($scope, $http, $location, $localStorage, md5) {
         if ($localStorage.key && $localStorage.key.length != 0) {
             $location.path("/list");
@@ -107,6 +153,7 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
         }
         if($localStorage.key) {
             $scope.contacts = [];
+
             $http.get("http://contacts.server/get_data.php?key=" + $localStorage.key)
                 .success(function (data, status) {
                     if (status == 200) {
