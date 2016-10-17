@@ -52,7 +52,8 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
                 get: 'get_data.php?'
             },
             PageContactCtrl: {
-                get: 'get_data.php?'
+                get: 'get_data.php?',
+                delete: 'delete_contact.php?'
             },
             AddContactCtrl: {
                 add: 'add_contact.php?'
@@ -65,8 +66,7 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
     })
     .service('requestService', ['$http', 'userUrl', '$localStorage', function ($http, userUrl, $localStorage) {
         var action = {
-            request : function (method, action, data, config, handleSuccess, handleError) {
-                $rootScope.globalLoader={'opacity':1};
+            request : function (method, action, data, handleSuccess, handleError) {
                 if($localStorage.key){
                     var auth_key = '&key='+$localStorage.key;
                 }
@@ -147,26 +147,27 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
             }
         }
     }])
-    .controller('ContactsCtrl', ['$scope', '$location', '$localStorage', '$http', function($scope, $location, $localStorage, $http) {
+    .controller('ContactsCtrl', ['$scope', '$location', '$localStorage', 'requestService', 'userUrl', function($scope, $location, $localStorage, requestService, userUrl) {
         if (!$localStorage.key || $localStorage.key.length == 0) {
             $location.path("/");
         }
         if($localStorage.key) {
             $scope.contacts = [];
 
-            $http.get("http://contacts.server/get_data.php?key=" + $localStorage.key)
-                .success(function (data, status) {
-                    if (status == 200) {
-                        data.forEach(item => {
-                            $scope.contacts.push(item);
-                        });
-                    }
-                })
-                .error(function(err){
-                    $scope.err = {};
-                    $scope.err.status = true;
-                    $scope.err.message = "Произошла ошибка сервера";
+            let handleSuccess = function(res){
+                res.data.forEach(item => {
+                    $scope.contacts.push(item);
                 });
+                console.log(data);
+            };
+            let handleError = function(){
+                $scope.err = {
+                    status: true,
+                    message: "Произошла ошибка сервера"
+                };
+            };
+
+            requestService.request('GET', userUrl.mainModule.ContactsCtrl.get, {}, handleSuccess, handleError);
         }
 
         $scope.show = function(id) {
