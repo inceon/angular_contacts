@@ -1,5 +1,4 @@
 'use strict';
-var contacts = [];
 angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileUpload'])
     .config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $httpProvider) {
         $httpProvider.defaults.useXDomain = true;
@@ -107,12 +106,12 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
             $location.path("/");
         }
         if($localStorage.key) {
-            contacts = [];
+            $scope.contacts = [];
             $http.get("http://contacts.server/get_data.php?key=" + $localStorage.key)
                 .success(function (data, status) {
                     if (status == 200) {
                         data.forEach(item => {
-                            contacts.push(item);
+                            $scope.contacts.push(item);
                         });
                     }
                 })
@@ -122,8 +121,6 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
                     $scope.err.message = "Произошла ошибка сервера";
                 });
         }
-        $scope.contacts = contacts;
-        console.log(contacts);
 
         $scope.show = function(id) {
             $location.path("/contact/" + id);
@@ -133,25 +130,19 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
         if (!$localStorage.key || $localStorage.key.length == 0) {
             $location.path("/");
         }
-        let found = contacts.filter(function (node) {
-            return node.id == $stateParams.id;
-        });
-        if(found[0]) {
-            $scope.contact = found[0];
-        } else {
-            $http.get("http://contacts.server/get_data.php?key=" + $localStorage.key + '&id=' + $stateParams.id)
-                .success(function (data, status) {
-                    if (status == 200) {
-                        $scope.contact = data
-                        console.log(data);
-                    }
-                })
-                .error(function(err){
-                    $scope.err = {};
-                    $scope.err.status = true;
-                    $scope.err.message = "Не удалось получить информацию";
-                });
-        }
+
+        $http.get("http://contacts.server/get_data.php?key=" + $localStorage.key + '&id=' + $stateParams.id)
+            .success(function (data, status) {
+                if (status == 200) {
+                    $scope.contact = data
+                    console.log(data);
+                }
+            })
+            .error(function(err){
+                $scope.err = {};
+                $scope.err.status = true;
+                $scope.err.message = "Не удалось получить информацию";
+            });
 
         $scope.delete = function(id){
             $http.get("http://contacts.server/delete_contact.php?key=" + $localStorage.key + '&id=' + id)
@@ -223,25 +214,19 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
         if (!$localStorage.key || $localStorage.key.length == 0) {
             $location.path("/");
         }
-        let found = contacts.filter(function (node) {
-            return node.id == $stateParams.id;
-        });
-        if(found[0]) {
-            $scope.contact = found[0];
-        } else {
-            $http.get("http://contacts.server/get_data.php?key=" + $localStorage.key + '&id=' + $stateParams.id)
-                .success(function (data, status) {
-                    if (status == 200) {
-                        $scope.contact = data
-                        console.log(data);
-                    }
-                })
-                .error(function(err){
-                    $scope.err = {};
-                    $scope.err.status = true;
-                    $scope.err.message = "Не удалось получить информацию";
-                });
-        }
+
+        $http.get("http://contacts.server/get_data.php?key=" + $localStorage.key + '&id=' + $stateParams.id)
+            .success(function (data, status) {
+                if (status == 200) {
+                    $scope.contact = data
+                    console.log(data);
+                }
+            })
+            .error(function(err){
+                $scope.err = {};
+                $scope.err.status = true;
+                $scope.err.message = "Не удалось получить информацию";
+            });
 
         $scope.submit = function(file) {
             let url = 'http://contacts.server/edit_contact.php?key=' + $localStorage.key;
