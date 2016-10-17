@@ -1,43 +1,43 @@
 'use strict';
 var contacts = [];
-angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpload'])
-    .config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
+angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileUpload'])
+    .config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $httpProvider) {
         $httpProvider.defaults.useXDomain = true;
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
-        $routeProvider
-            .when('/', {
-                templateUrl: '../template/login.html',
+        $urlRouterProvider.otherwise('/list');
+
+        $stateProvider
+            .state('login', {
+                url: "/",
+                templateUrl: "../template/login.html",
                 controller: 'LoginCtrl'
             })
-            .when('/register', {
+            .state('register', {
+                url: "/register",
                 templateUrl: '../template/register.html',
                 controller: 'RegisterCtrl'
             })
-            .when('/list', {
+            .state('list', {
+                url: "/list",
                 templateUrl: '../template/contacts.html',
                 controller: 'ContactsCtrl'
             })
-            .when('/add', {
+            .state('add', {
+                url: "/add",
                 templateUrl: '../template/add_contact.html',
                 controller: 'AddContactCtrl'
             })
-            .when('/contact/:id', {
+            .state('contact', {
+                url: "/contact/:id",
                 templateUrl: '../template/contact_page.html',
                 controller: 'PageContactCtrl'
             })
-            .when('/edit/:id', {
+            .state('edit', {
+                url: "/edit/:id",
                 templateUrl: '../template/edit_contact.html',
                 controller: 'EditContactCtrl'
-            })
-            .otherwise({
-                redirectTo: '/'
             });
-    }])
-    .run(['$http', '$location', '$localStorage', function($http, $location, $localStorage) {
-        if($localStorage.key) {
-
-        }
     }])
     .controller('LoginCtrl', ['$scope', '$http', '$location', '$localStorage', 'md5', function($scope, $http, $location, $localStorage, md5) {
         if ($localStorage.key && $localStorage.key.length != 0) {
@@ -129,14 +129,29 @@ angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpl
             $location.path("/contact/" + id);
         }
     }])
-    .controller('PageContactCtrl', ['$scope', '$http', '$location', '$routeParams', '$localStorage', function($scope, $http, $location, $routeParams, $localStorage) {
+    .controller('PageContactCtrl', ['$scope', '$http', '$location', '$stateParams', '$localStorage', function($scope, $http, $location, $stateParams, $localStorage) {
         if (!$localStorage.key || $localStorage.key.length == 0) {
             $location.path("/");
         }
         let found = contacts.filter(function (node) {
-            return node.id == $routeParams.id;
+            return node.id == $stateParams.id;
         });
-        $scope.contact = found[0];
+        if(found[0]) {
+            $scope.contact = found[0];
+        } else {
+            $http.get("http://contacts.server/get_data.php?key=" + $localStorage.key + '&id=' + $stateParams.id)
+                .success(function (data, status) {
+                    if (status == 200) {
+                        $scope.contact = data
+                        console.log(data);
+                    }
+                })
+                .error(function(err){
+                    $scope.err = {};
+                    $scope.err.status = true;
+                    $scope.err.message = "Не удалось получить информацию";
+                });
+        }
 
         $scope.delete = function(id){
             $http.get("http://contacts.server/delete_contact.php?key=" + $localStorage.key + '&id=' + id)
@@ -204,14 +219,29 @@ angular.module('contactsApp', ['ngRoute', 'ngStorage', 'angular-md5', 'ngFileUpl
             }
         };
     }])
-    .controller('EditContactCtrl', ['$scope', '$routeParams', '$localStorage', '$location', '$http', 'Upload', function($scope, $routeParams, $localStorage, $location, $http, Upload) {
+    .controller('EditContactCtrl', ['$scope', '$stateParams', '$localStorage', '$location', '$http', 'Upload', function($scope, $stateParams, $localStorage, $location, $http, Upload) {
         if (!$localStorage.key || $localStorage.key.length == 0) {
             $location.path("/");
         }
         let found = contacts.filter(function (node) {
-            return node.id == $routeParams.id;
+            return node.id == $stateParams.id;
         });
-        $scope.contact = found[0];
+        if(found[0]) {
+            $scope.contact = found[0];
+        } else {
+            $http.get("http://contacts.server/get_data.php?key=" + $localStorage.key + '&id=' + $stateParams.id)
+                .success(function (data, status) {
+                    if (status == 200) {
+                        $scope.contact = data
+                        console.log(data);
+                    }
+                })
+                .error(function(err){
+                    $scope.err = {};
+                    $scope.err.status = true;
+                    $scope.err.message = "Не удалось получить информацию";
+                });
+        }
 
         $scope.submit = function(file) {
             let url = 'http://contacts.server/edit_contact.php?key=' + $localStorage.key;
