@@ -177,37 +177,36 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
             $location.path("/contact/" + id);
         }
     }])
-    .controller('PageContactCtrl', ['$scope', '$http', '$location', '$stateParams', '$localStorage', function($scope, $http, $location, $stateParams, $localStorage) {
+    .controller('PageContactCtrl', ['$scope', '$http', '$location', '$stateParams', '$localStorage', 'requestService', 'apiUrl', function($scope, $http, $location, $stateParams, $localStorage, requestService, apiUrl) {
         if (!$localStorage.key || $localStorage.key.length == 0) {
             $location.path("/");
         }
 
-        $http.get("http://contacts.server/get_data.php?key=" + $localStorage.key + '&id=' + $stateParams.id)
-            .success(function (data, status) {
-                if (status == 200) {
-                    $scope.contact = data
-                    console.log(data);
-                }
-            })
-            .error(function(err){
-                $scope.err = {};
-                $scope.err.status = true;
-                $scope.err.message = "Не удалось получить информацию";
-            });
+        let handleSuccess = function(res){
+            $scope.contact = res.data;
+            console.log(res);
+        };
+        let handleError = function(){
+            $scope.err = {
+                status: true,
+                message: "Не удалось получить информацию"
+            };
+        };
+
+        requestService.request('GET', apiUrl.mainModule.PageContactCtrl.get, {id: $stateParams.id}, handleSuccess, handleError);
 
         $scope.delete = function(id){
-            $http.get("http://contacts.server/delete_contact.php?key=" + $localStorage.key + '&id=' + id)
-                .success(function (data, status) {
-                    if (status == 200) {
-                        if (data['status'] == 'OK'){
-                            $location.path("/list");
-                        } else {
-                            $scope.err = {};
-                            $scope.err.status = true;
-                            $scope.err.message = "Удалить не удалось";
-                        }
-                    }
-                });
+            let handleSuccess = function(res){
+                $location.path("/list");
+            };
+            let handleError = function(){
+                $scope.err = {
+                    status: true,
+                    message: "Не удалось удалить пользователя"
+                };
+            };
+
+            requestService.request('GET', apiUrl.mainModule.PageContactCtrl.delete, {id: id}, handleSuccess, handleError);
         }
     }])
     .controller('AddContactCtrl', ['$scope', 'Upload', '$localStorage', '$location', '$timeout', '$http', function($scope, Upload, $localStorage, $location, $timeout, $http) {
