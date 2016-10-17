@@ -13,18 +13,18 @@
         <div class="file-field input-field">
             <div class="btn">
                 File
-                <input name="photo" type="file" ng-model="photo" ngf-select accept="image/*" ngf-max-height="1000" ngf-max-size="1MB">
+                <input name="photo" type="file" ng-model="photo" ngf-select accept="image/*" ngf-max-size="1MB">
             </div>
             <div class="file-path-wrapper">
                 <input class="file-path validate" type="text" placeholder="Фотография пользователя">
             </div>
         </div>
         <div class="input-field">
-            <input class="validate" id="name" type="text" name="name" ng-model="contact.name" size="30" required>
+            <input class="validate" id="name" type="text" name="name" ng-model="contact.name" maxlength="15" required>
             <label ng-class="{active : contact.name}" for="name">Имя *</label>
         </div>
         <div class="input-field">
-            <input class="validate" id="surname" type="text" name="surname" ng-model="contact.surname" size="30" required>
+            <input class="validate" id="surname" type="text" name="surname" ng-model="contact.surname" maxlength="15" required>
             <label ng-class="{active : contact.surname}" for="surname">Фамилия *</label>
         </div>
         <div class="input-field">
@@ -32,7 +32,7 @@
             <label ng-class="{active : contact.number}" for="phone">Номер телефона *</label>
         </div>
         <div class="input-field">
-            <input class="validate" id="email" type="email" name="email" ng-model="contact.email">
+            <input class="validate" id="email" type="email" name="email" maxlength="15" ng-model="contact.email">
             <label ng-class="{active : contact.email}" for="email">Електронная почта</label>
         </div>
         <div class="button center row">
