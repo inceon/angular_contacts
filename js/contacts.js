@@ -64,22 +64,31 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
         };
         return url;
     })
-    .service('requestService', ['$http', 'apiUrl', '$localStorage', function ($http, apiUrl, $localStorage) {
+    .service('requestService', ['$http', 'apiUrl', '$localStorage', 'Upload', function ($http, apiUrl, $localStorage, Upload) {
         var action = {
-            request : function (method, action, data, handleSuccess, handleError) {
+            request : function (method, action, data, handleSuccess, handleError, fileData) {
                 let auth_key = '';
                 if($localStorage.key){
                     auth_key = '&key='+$localStorage.key;
                 }
-                $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
-                var getConfig, postConfig;
-                (method === "GET") ? getConfig = data : postConfig = data;
-                var req = $http({
-                    method: method,
-                    url: apiUrl.mainModule.api + action + auth_key,
-                    params: getConfig,
-                    data: postConfig
-                });
+                let req;
+                if(fileData){
+                    data['photo'] = fileData;
+                    req = Upload.upload({
+                        url: apiUrl.mainModule.api + action + auth_key,
+                        data: data
+                    });
+                } else {
+                    $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+                    var getConfig, postConfig;
+                    (method === "GET") ? getConfig = data : postConfig = data;
+                    req = $http({
+                        method: method,
+                        url: apiUrl.mainModule.api + action + auth_key,
+                        params: getConfig,
+                        data: postConfig
+                    });
+                }
 
                 return (req.then(handleSuccess, handleError))
             }
@@ -221,23 +230,24 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
             };
 
             if (file) {
-                data['photo'] = file;
-                Upload.upload({
-                    url: url,
-                    data: data
-                }).success(function (data) {
-                    if (data['status'] == 'OK') {
+                let handleSuccess = function(res){
+                    if (res.data['status'] == 'OK') {
                         $location.path("/list");
                     } else {
-                        $scope.err = {};
-                        $scope.err.status = true;
-                        $scope.err.message = data['message'];
+                        $scope.err = {
+                            status: true,
+                            message: res.data['message']
+                        };
                     }
-                }).error(function () {
-                    $scope.err = {};
-                    $scope.err.status = true;
-                    $scope.err.message = "Произошла ошибка сервера";
-                });
+                };
+                let handleError = function(){
+                    $scope.err = {
+                        status: true,
+                        message: "Произошла ошибка сервера"
+                    };
+                };
+
+                requestService.request('POST', apiUrl.mainModule.AddContactCtrl.add, data, handleSuccess, handleError, file);
             } else {
                 let handleSuccess = function(res){
                     if(res.data['status'] == 'OK') {
@@ -278,7 +288,6 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
         requestService.request('GET', apiUrl.mainModule.PageContactCtrl.get, {id: $stateParams.id}, handleSuccess, handleError);
 
         $scope.submit = function(file) {
-            let url = 'http://contacts.server/edit_contact.php?key=' + $localStorage.key;
             let data = {
                 id: $scope.contact.id,
                 name: $scope.contact.name,
@@ -287,24 +296,25 @@ angular.module('contactsApp', ['ui.router', 'ngStorage', 'angular-md5', 'ngFileU
                 email: $scope.contact.email
             };
             if (file) {
-                data['photo'] = file;
-                Upload.upload({
-                    url: url,
-                    data: data
-                }).success(function (data) {
-                    if (data['status'] == 'OK') {
-                        $scope.contact.photo = data['photo'];
+                let handleSuccess = function(res){
+                    if (res.data['status'] == 'OK') {
+                        $scope.contact.photo = res.data['photo'];
                         $location.path("/contact/" + $scope.contact.id);
                     } else {
-                        $scope.err = {};
-                        $scope.err.status = true;
-                        $scope.err.message = data['message'];
+                        $scope.err = {
+                            status: true,
+                            message: data['message']
+                        };
                     }
-                }).error(function () {
-                    $scope.err = {};
-                    $scope.err.status = true;
-                    $scope.err.message = "Произошла ошибка сервера";
-                });
+                };
+                let handleError = function(){
+                    $scope.err = {
+                        status: true,
+                        message: "Произошла ошибка сервера"
+                    };
+                };
+
+                requestService.request('POST', apiUrl.mainModule.EditContactCtrl.set, data, handleSuccess, handleError, file);
             } else {
                 let handleSuccess = function(res){
                     if(res.data['status'] == 'OK') {
